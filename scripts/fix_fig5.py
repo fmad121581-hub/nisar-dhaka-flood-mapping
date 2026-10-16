@@ -7,6 +7,10 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+# Figure titles are intentionally NOT drawn inside the image: Copernicus/NHESS
+# requires the caption to be typeset text below the figure, so a title baked into
+# the PNG would duplicate it. Captions live in the manuscript, not here.
+
 _HOME = Path(os.environ["HOME"])
 D_ROOT = _HOME / "mnt" / "d" / "NISAR_Dhaka_Flood"
 FIG_DIR = D_ROOT / "figures"
@@ -41,11 +45,6 @@ ax.set_xlabel("Share of vegetated-class pixels (%)")
 ax.set_xlim(0, 13)
 ax.set_ylim(-0.55, 2.15)
 ax.legend(fontsize=8, loc="lower right")
-ax.set_title(
-    "Figure 5. Pixel-level anomaly fractions (|Δ| > 3 dB),\n"
-    "Experiment 1, Demra — reported as per-sensor ranges across five vegetated classes",
-    fontsize=10.5, pad=12,
-)
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figure5_pixel_anomaly_fractions.png", dpi=1000, bbox_inches="tight")
 plt.close(fig)

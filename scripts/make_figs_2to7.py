@@ -15,6 +15,10 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, Patch
 
+# Figure titles are intentionally NOT drawn inside the image: Copernicus/NHESS
+# requires the caption to be typeset text below the figure, so a title baked into
+# the PNG would duplicate it. Captions live in the manuscript, not here.
+
 _HOME = Path(os.environ["HOME"])
 D_ROOT = _HOME / "mnt" / "d" / "NISAR_Dhaka_Flood"
 FIG_DIR = D_ROOT / "figures"
@@ -65,7 +69,6 @@ for i in range(2):
     ax.annotate(f"{treecrop_b[i]:g}%", (i, built_up_b[i] + treecrop_b[i] / 2), ha="center", va="center", fontsize=7, color="white")
     ax.annotate(f"{other_b[i]:.1f}%", (i, bottom2[i] + other_b[i] / 2), ha="center", va="center", fontsize=7)
 
-fig.suptitle("Figure 2. ESA WorldCover 10 m (2020) land-cover composition at both study sites", fontsize=11)
 fig.tight_layout(rect=[0, 0, 1, 0.94])
 fig.savefig(FIG_DIR / "figure2_worldcover_composition.png", dpi=1000, bbox_inches="tight")
 plt.close(fig)
@@ -115,7 +118,6 @@ handles = [
     plt.Line2D([0], [0], marker="s", color="tab:orange", linestyle="", markeredgecolor="black", label="Sentinel-1 acquisition"),
 ]
 ax.legend(handles=handles, fontsize=8, loc="upper right")
-ax.set_title("Figure 3. NASA POWER daily precipitation at Demra, 1-25 July 2026,\nwith Experiment 1 (peak-flood) and Experiment 2 (early-recession) acquisitions marked", fontsize=11)
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figure3_rainfall_timeseries.png", dpi=1000, bbox_inches="tight")
 plt.close(fig)
@@ -179,7 +181,6 @@ for j, c in enumerate(cols):
 
 cbar = fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02)
 cbar.set_label("Mean Δ backscatter, during - pre (dB)")
-ax.set_title("Figure 4. Mean Δ backscatter (during - pre) by vegetated class, sensor,\nexperiment and site, Demra and Uttar Khan", fontsize=11)
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figure4_delta_heatmap.png", dpi=1000, bbox_inches="tight")
 plt.close(fig)
@@ -213,7 +214,6 @@ ax.set_yticklabels(sensors)
 ax.set_xlabel("Share of vegetated-class pixels (%)")
 ax.set_xlim(0, 13)
 ax.legend(fontsize=8, loc="lower right")
-ax.set_title("Figure 5. Pixel-level anomaly fractions (|Δ| > 3 dB),\nExperiment 1, Demra — reported as per-sensor ranges across five vegetated classes", fontsize=10.5)
 fig.tight_layout()
 fig.savefig(FIG_DIR / "figure5_pixel_anomaly_fractions.png", dpi=1000, bbox_inches="tight")
 plt.close(fig)
@@ -255,7 +255,6 @@ ax.set_title("B. Total pixel count, 20 m vs native 10 m")
 for b, v in zip(bars, [pix_20m, pix_10m_approx]):
     ax.annotate(f"{v:,}", (b.get_x() + b.get_width() / 2, v), ha="center", va="bottom", fontsize=8)
 
-fig.suptitle("Figure 6. Native-10 m re-analysis of Experiment 1 (NISAR, Demra)\nagainst the primary 20 m grid", fontsize=11)
 fig.tight_layout(rect=[0, 0, 1, 0.92])
 fig.savefig(FIG_DIR / "figure6_native10m_robustness.png", dpi=1000, bbox_inches="tight")
 plt.close(fig)
@@ -323,7 +322,6 @@ ax.set_title("D. Kaptai Lake calibration check, all channels\n(Table 10; n=503,2
 for b, v in zip(bars, vals_d):
     ax.annotate(f"{v:+.2f} dB", (b.get_x() + b.get_width() / 2, v), ha="center", va="top", fontsize=8)
 
-fig.suptitle("Figure 7. The acquisition-mode / cross-sensor calibration-artifact evidence", fontsize=13)
 fig.tight_layout(rect=[0, 0, 1, 0.96])
 fig.savefig(FIG_DIR / "figure7_calibration_artifact.png", dpi=1000, bbox_inches="tight")
 plt.close(fig)

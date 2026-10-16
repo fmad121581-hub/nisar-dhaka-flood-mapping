@@ -18,6 +18,10 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 from matplotlib.colors import ListedColormap
 
+# Figure titles are intentionally NOT drawn inside the image: Copernicus/NHESS
+# requires the caption to be typeset text below the figure, so a title baked into
+# the PNG would duplicate it. Captions live in the manuscript, not here.
+
 _HOME = Path(os.environ["HOME"])
 D_ROOT = _HOME / "mnt" / "d" / "NISAR_Dhaka_Flood"
 WC_DIR = D_ROOT / "raw_data" / "worldcover"
@@ -80,7 +84,6 @@ fig, axes = plt.subplots(1, 2, figsize=(11, 5.2))
 panel(axes[0], "Demra", SITES["Demra"])
 panel(axes[1], "Uttar Khan", SITES["Uttar Khan"])
 fig.legend(handles, labels, loc="lower center", ncol=4, fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.06))
-fig.suptitle("Figure 1. Demra and Uttar Khan study sites (ESA WorldCover 10 m, 2020)", fontsize=12)
 fig.tight_layout(rect=[0, 0.05, 1, 0.96])
 fig.savefig(FIG_DIR / "figure1_study_area_demra_uttarkhan.png", dpi=1000, bbox_inches="tight")
 plt.close(fig)
@@ -90,7 +93,6 @@ fig, axes = plt.subplots(1, 2, figsize=(11, 5.2))
 panel(axes[0], "Hakaluki Haor", SITES["Hakaluki Haor"])
 panel(axes[1], "Kaptai Lake", SITES["Kaptai Lake"])
 fig.legend(handles, labels, loc="lower center", ncol=4, fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.06))
-fig.suptitle("Supplementary Figure S1. Hakaluki Haor and Kaptai Lake locator maps (ESA WorldCover 10 m, 2020)", fontsize=12)
 fig.tight_layout(rect=[0, 0.05, 1, 0.96])
 fig.savefig(FIG_DIR / "figureS1_locator_hakaluki_kaptai.png", dpi=1000, bbox_inches="tight")
 plt.close(fig)

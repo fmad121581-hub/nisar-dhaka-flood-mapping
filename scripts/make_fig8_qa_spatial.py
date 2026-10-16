@@ -6,6 +6,10 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+# Figure titles are intentionally NOT drawn inside the image: Copernicus/NHESS
+# requires the caption to be typeset text below the figure, so a title baked into
+# the PNG would duplicate it. Captions live in the manuscript, not here.
+
 _HOME = Path(os.environ["HOME"])
 D_ROOT = _HOME / "mnt" / "d" / "NISAR_Dhaka_Flood"
 PROC = D_ROOT / "processed"
@@ -56,7 +60,6 @@ for ax, (title, delta, valid, ref_path) in zip(axes.flat, panels):
 fig.subplots_adjust(hspace=0.35, wspace=0.3, top=0.90, right=0.86)
 cbar = fig.colorbar(im, ax=axes.ravel().tolist(), shrink=0.85, pad=0.03)
 cbar.set_label("Permanent-water delta backscatter (dB), during minus pre (clipped at +/-6 dB)", fontsize=9)
-fig.suptitle("Figure 8. Spatial pattern of the permanent-water calibration check, four scene pairs", fontsize=13, y=0.97)
 fig.savefig(FIG_DIR / "figure8_qa_spatial_maps.png", dpi=1000, bbox_inches="tight")
 plt.close(fig)
 print("Saved figure8_qa_spatial_maps.png")
