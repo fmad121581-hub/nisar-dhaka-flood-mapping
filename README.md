@@ -1,43 +1,63 @@
-# NISAR L-band vs Sentinel-1 C-band vegetated-flood-detection code
+# NISAR L-band vs Sentinel-1 C-band: monsoon flooding in Bangladesh (v2)
 
 Processing scripts for:
 
-**Ahmed, F.** "Testing Vegetated-Flood Detection with NISAR and Sentinel-1 in Bangladesh: Null Cases, Acquisition-Mode Discrepancies, and Scene-Pair Quality Assurance." Submitted to the *International Journal of Applied Earth Observation and Geoinformation*.
+**Ahmed, F.** "Early NISAR L-band observations of monsoon flooding in Bangladesh, compared with Sentinel-1 against independent water-level records." Manuscript in preparation.
 
-Solo, unfunded undergraduate research, Department of Urban and Regional Planning (URP), Bangladesh University of Engineering and Technology (BUET).
+Solo, unfunded undergraduate research, Department of Urban and Regional Planning (URP), BUET.
 
-## What this is, and what it is not
+## What changed from v1
 
-This repository holds the processing and figure-generation scripts used to produce every table and figure in the manuscript, deposited so the analysis is independently checkable and reproducible from the raw inputs. It does **not** host the raw satellite data itself. NISAR Level-2 GCOV and Sentinel-1 SAR data are public and already cited in the manuscript's Data Availability statement (Alaska Satellite Facility DAAC, https://search.asf.alaska.edu); ESA WorldCover 10 m (https://esa-worldcover.org) and NASA POWER (https://power.larc.nasa.gov) are likewise public. Re-hosting multi-gigabyte HDF5 granules and Sentinel-1 SLC archives here would be redundant with those archives and is not attempted.
+v1 accompanied an earlier manuscript ("Testing Vegetated-Flood Detection with NISAR and Sentinel-1 in Bangladesh…", not published). Its scripts are kept unchanged in `scripts/v1/`.
 
-## Script-to-manuscript map
+The v2 re-analysis found that v1's headline result was wrong. v1 reported an ~8 dB "acquisition-mode" calibration shift over permanent water at Uttar Khan, 2 → 14 July 2026. That shift came from invalid samples in a partial-frame granule (`isFullFrame = False`; GCOV `mask` = 0 over 96.7 % of the ward). The v1 scripts never applied the valid-sample mask.
 
-| Script | Manuscript section(s) | Purpose |
-|---|---|---|
-| `phase2_preprocessing.py` | Section 3.2, 4.2 | NISAR GCOV HDF5 windowed extraction, Sentinel-1 RTC read, reprojection/co-registration to the common 20 m grid, WorldCover masking, initial absolute-value clustering QA check |
-| `phase4_preprocessing.py` | Section 3.3 | Two-experiment redesign: re-extraction and co-registration of the rainfall-screened, genuinely-dry-baseline scene pairs (Experiments 1 and 2) |
-| `phase4_differencing.py` | Section 3.4, 4.3, 4.4 (Tables 3, 4) | Class-mean differencing, Demra, both experiments, both sensors; produces the since-superseded initial result and the corrected main result |
-| `phase5_native10m_check.py` | Section 3.5, 4.5 (Fig. 6) | Native-10 m robustness re-analysis, Experiment 1 NISAR |
-| `phase6_uttarkhan.py` | Section 4.4 (Table 5) | Uttar Khan differencing, Experiment 1 |
-| `phase6_diagnose_exp2.py` | Section 3.6, 4.7 (Table 6, Fig. 7) | Diagnosis of the Uttar Khan Experiment 2 acquisition-mode calibration discrepancy: permanent-water shift comparison across mode-matched/mismatched scene pairs |
-| `phase8_copol_check.py` | Section 4.4 discussion, Uttar Khan co-pol robustness check | NISAR HHHH / Sentinel-1 VV co-polarization cross-check at Uttar Khan |
-| `phase9_replicate_ascending.py` | Section 4.4 footnote (second independent date-pair replication) | Extends the Demra/Uttar Khan record with a further ascending-track date pair |
-| `phase10_hakaluki_haor.py` | Section 4.9 (Table 8) | Hakaluki Haor cross-polarized (NISAR HVHV, Sentinel-1 VH) differencing and permanent-water calibration check |
-| `phase11_hakaluki_copol.py` | Section 4.10 (Table 9) | Hakaluki Haor co-polarized (NISAR HHHH, Sentinel-1 VV) differencing and calibration check |
-| `phase12_kaptai_lake.py` | Section 4.11 (Tables 10, 11) | Kaptai Lake three-channel (NISAR HVHV, Sentinel-1 VH/VV) differencing and calibration check |
-| `phase12_kaptai_s1_vv_check.py` | Section 4.11 | Kaptai Lake Sentinel-1 VV co-polarization cross-check |
-| `qa_spatial_bootstrap.py` | Section 4.12 (Table 12) | Pixel-count-weighted, non-overlapping spatial block bootstrap (5×5-pixel blocks, 3,000 resamples) producing 95% confidence intervals for all ten permanent-water calibration checks |
-| `make_fig1_maps.py` | Fig. 1, Supplementary Fig. S1 | Study-area and locator maps over ESA WorldCover |
-| `make_figs_2to7.py` | Figs. 2–7 | WorldCover composition, rainfall time series, delta heatmap, pixel-anomaly fractions, native-resolution robustness, calibration-artifact figure |
-| `fix_fig5.py` | Fig. 5 | Layout correction for the pixel-anomaly-fraction figure (annotation/title overlap fix) |
-| `make_fig8_qa_spatial.py` | Fig. 8 | Spatial difference maps for the four permanent-water QA diagnostics |
+v2 makes the following changes:
+- Applies the GCOV valid-sample mask.
+- Uses co-polarization (HH, VV) as the primary channel.
+- Uses stable land references instead of permanent water.
+- Adds a Hakaluki Haor time series (NISAR track 141 and OPERA RTC-S1, June–October 2026), read against river stage.
+- Adds a Kaptai Lake reservoir-rise case.
 
-Table 13 (the NASA POWER wind-speed cross-check, Section 4.12) was produced by retrieving the NASA POWER daily-wind API response directly (no local script; the API call and its parameters are documented in the manuscript text and are trivially reproducible from the URL pattern: `https://power.larc.nasa.gov/api/temporal/daily/point?parameters=WS10M,WS10M_MAX&community=RE&longitude=...&latitude=...&start=...&end=...&format=JSON`).
+## Script map (v2)
+
+| Script | Purpose |
+|---|---|
+| `phase13_mask_copol_reanalysis.py` | Dhaka, NISAR: masked, HH and HV, class means and changes (the descending pair is computed but excluded from the paper by granule screening) |
+| `phase14_s1_copol_reanalysis.py` | Dhaka, Sentinel-1 HyP3 RTC: VV and VH, layover/shadow mask, file integrity check |
+| `phase15_builtup_elevation_test.py` | Central Dhaka: built-up co-pol change by Copernicus DSM height band |
+| `phase16_hakaluki_timeseries.py` | Hakaluki NISAR class means, every track-141 date |
+| `phase17_hakaluki_lowland_vs_upland.py` | Hakaluki basin vs hill tree cover, every date |
+| `phase18_hakaluki_s1_opera_timeseries.py` | Hakaluki OPERA RTC-S1 class means, every date |
+| `phase19_kaptai_reservoir_rise.py` | Kaptai NISAR (track 069 frame 013). Its Sentinel-1 block reads v1 rasters that do not align with WorldCover and is superseded by phase 20. |
+| `phase20_kaptai_s1_opera.py` | Kaptai OPERA RTC-S1, mosaicked and restricted to the NISAR footprint |
+| `phase21_thresholds_and_ci.py` | Pooled per-site, per-sensor Otsu thresholds, water-like shares and block-bootstrap CIs (Hakaluki, Kaptai) |
+| `phase22_stage_sensitivity.py` | Spearman ρ between Fenchuganj stage and Hakaluki cropland backscatter under all 96 combinations of alternative stage readings (Table 1 and Sect. 2.1) |
+| `make_fig_v2_study_area.py` | Fig. 1 |
+| `make_fig_v2_qa.py` | Fig. 2 |
+| `make_fig_hakaluki_l_vs_c.py` | Fig. 3 and Table 2 metrics |
+| `make_fig_v2_kaptai_dhaka.py` | Figs. 4 and 5 |
+| `make_supplement_tables.py` | Tables S1–S5 (CSV copies in `tables/`) |
+| `build_manuscript_v2_docx.py`, `build_supplement_v2_docx.py` | Word files from the Markdown source (the manuscript text itself is not included here) |
+
+The scripts assume the folder layout `D:\NISAR_Dhaka_Flood\{raw_data,processed,figures}`. Edit `ROOT` at the top of each script to run them elsewhere.
+
+## Inputs (not redistributed)
+
+Study period: SAR acquisitions from 19 June to 12 October 2026 (Hakaluki), 26 June to 1 August 2026 (Kaptai) and 30 June to 13 July 2026 (Dhaka).
+
+
+- NISAR L2 GCOV provisional, https://doi.org/10.5067/NIL2GCOV-P1
+- OPERA RTC-S1, https://doi.org/10.5067/SNWG/OPERA_L2_RTC-S1_V1
+- Sentinel-1 IW SLC processed with ASF HyP3
+- ESA WorldCover 2020, https://doi.org/10.5281/zenodo.5571936
+- Copernicus GLO-30, https://doi.org/10.5270/ESA-c5d3d65 (read remotely as COG)
+- geoBoundaries BGD ADM0 and ADM2
+
+Granule identifiers are listed in `tables/tableS1_granules.csv`. River-stage and lake-level records and their sources are in `tables/tableS2_stage_and_levels.csv`.
+
+Hard-coded inputs: the Kaptai Lake levels (in `make_fig_v2_kaptai_dhaka.py` and `make_supplement_tables.py`) and the alternative Fenchuganj readings (in `phase22_stage_sensitivity.py`) are typed in from the sources listed in Table S2; `phase22` writes them to `tables/phase22_stage_alternatives.csv`. Everything else is read from the satellite products or from the CSV outputs of earlier phases.
 
 ## Environment
 
-Python 3.10, with `rasterio`, `h5py`, `numpy`, `scipy`, `matplotlib`, and `pyproj`/GDAL available (GDAL's `/vsizip/` virtual filesystem is used to read Sentinel-1 RTC bands directly from HyP3's delivered zip archives without extracting them). No `requirements.txt` is pinned yet; if reproducing this exactly matters to a reviewer, open an issue and this will be added, but the scripts do not depend on unusual or version-sensitive APIs from any of these libraries.
-
-## Provenance note
-
-These scripts were run interactively, one processing phase at a time, over several days in September 2026, on a single researcher's personal workstation, not as a packaged end-to-end pipeline with a single entry point. They are deposited here as-is, exactly as run, rather than refactored into a cleaner pipeline after the fact, so that what is published here is what actually produced the manuscript's numbers.
+Python 3.13. Pinned versions are in `requirements.txt`.
