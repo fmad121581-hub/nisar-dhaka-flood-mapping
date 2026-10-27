@@ -34,11 +34,12 @@ fig = plt.figure(figsize=(11, 7.5))
 gs = fig.add_gridspec(2, 2, height_ratios=[1.15, 1])
 ax = fig.add_subplot(gs[0, 0])
 cat = np.where(mask == 0, 0, np.where(mask == 255, 2, 1))
-ax.imshow(cat, extent=ext, cmap=ListedColormap(["#d62728", "#2ca02c", "#cccccc"]), vmin=0, vmax=2,
+# colour-blind safe pair: orange = invalid (0), dark blue = valid
+ax.imshow(cat, extent=ext, cmap=ListedColormap(["#e66101", "#2166ac", "#cccccc"]), vmin=0, vmax=2,
           interpolation="nearest")
 ax.add_patch(plt.Rectangle((UK[0] / 1e3, UK[1] / 1e3), (UK[2] - UK[0]) / 1e3, (UK[3] - UK[1]) / 1e3,
                            fill=False, ec="black", lw=1.5))
-ax.text(0.02, 0.98, "(a) mask, 14 Jul (091/077, partial frame)\nred = 0 (invalid), green = valid",
+ax.text(0.02, 0.98, "(a) mask, 14 Jul (091/077, partial frame)\norange = 0 (invalid), blue = valid",
         transform=ax.transAxes, va="top", fontsize=8.5, bbox=dict(fc="white", ec="none", alpha=0.85))
 ax.set_xlabel("Easting (km)")
 ax.set_ylabel("Northing (km)")
@@ -47,7 +48,7 @@ ax = fig.add_subplot(gs[0, 1])
 with np.errstate(divide="ignore", invalid="ignore"):
     im = ax.imshow(10 * np.log10(hv), extent=ext, cmap="gray", vmin=-30, vmax=-5, interpolation="nearest")
 ax.add_patch(plt.Rectangle((UK[0] / 1e3, UK[1] / 1e3), (UK[2] - UK[0]) / 1e3, (UK[3] - UK[1]) / 1e3,
-                           fill=False, ec="#d62728", lw=1.5))
+                           fill=False, ec="#e66101", lw=1.5))
 ax.text(0.02, 0.98, "(b) HV as delivered (dB)", transform=ax.transAxes, va="top", fontsize=8.5,
         bbox=dict(fc="white", ec="none", alpha=0.85))
 ax.set_xlabel("Easting (km)")
